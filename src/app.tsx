@@ -3,7 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import {
   ApolloProvider,
 } from "@apollo/client";
-import { DashboardPage } from './pages/dashboard.page';
+import { DashboardPage } from './pages/dashboard/dashboard.page';
 import { APISettingsRoot } from './components/api/api-settings';
 import { useClient } from './client';
 
