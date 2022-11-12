@@ -11,16 +11,18 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { useMemo } from "react";
 import { useApiSettings } from "./components/api/api-settings";
 
+const apiConfig = API_CONFIG
+
 const cache = new InMemoryCache()
 
 // HTTP Link
 const httpLink = new HttpLink({
-  uri: "http://localhost:8080/graphql",
+  uri: apiConfig.httpUrl,
 });
 
 // WebSocket Link
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:8080/graphql`,
+  uri: apiConfig.wsUrl,
   options: {
     reconnect: true,
     lazy: true,
@@ -56,8 +58,8 @@ export function useLink(): ApolloLink {
       return {
         headers: {
           ...headers,
-          "X-Auth-Key": apiKey,
-          "X-Auth-Role": "admin",
+          [apiConfig.apiKeyHeader]: apiKey,
+          ...apiConfig.extraHeaders
         },
       };
     });

@@ -201,7 +201,7 @@ function PairContent({
 
         {token1Delta && <>
           <YAxis yAxisId='token1Delta' dataKey="token1Delta" domain={['auto', 'auto']} tickFormatter={formatNumber} orientation={(nextOrientation=!nextOrientation) ? 'left' : 'right'} />
-          <Area type='monotone' dataKey="token1Delta" yAxisId="token1Delta" name={`${token0.symbol} Delta`} stroke='#82ca9d' fill="url(#colorA)" strokeWidth={2} opacity={0.85} />
+          <Area type='monotone' dataKey="token1Delta" yAxisId="token1Delta" name={`${token1.symbol} Delta`} stroke='#82ca9d' fill="url(#colorA)" strokeWidth={2} opacity={0.85} />
         </>}
         
         <Tooltip formatter={(v, name) => {
