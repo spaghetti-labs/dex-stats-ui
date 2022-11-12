@@ -1,10 +1,16 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import Button from '@mui/material/Button';
+import {
+  ApolloProvider,
+} from "@apollo/client";
+import { client } from './client';
+import { DashboardPage } from './pages/dashboard.page';
 
 export function App() {
   return <>
     <CssBaseline enableColorScheme />
-    <Button variant="contained">Hello World</Button>
+    <ApolloProvider client={client}>
+      <DashboardPage />
+    </ApolloProvider>
   </>;
 }

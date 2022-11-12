@@ -2,11 +2,12 @@
     "compilerOptions": {
         "outDir": "./dist/",
         "noImplicitAny": true,
-        "module": "es6",
-        "target": "es5",
+        "module": "es2020",
+        "target": "es6",
         "jsx": "react",
         "allowJs": true,
         "moduleResolution": "node",
         "sourceMap": true,
-    }
+    },
+    "include": ["src", "src/globals.d.ts"],
 }
