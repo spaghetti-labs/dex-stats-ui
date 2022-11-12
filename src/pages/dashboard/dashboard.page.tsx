@@ -162,7 +162,7 @@ export function DashboardPage() {
     </Box>
     <Divider orientation="vertical" />
     <Box display='flex' flexDirection='column' alignItems='stretch' flex={1} overflow='hidden'>
-      <Box display='flex' flexDirection='row' alignItems='center' gap={2} pl={2} pr={2} overflow='hidden' height='72px'>
+      <Box display='flex' flexDirection='row' alignItems='center' gap={2} pl={2} pr={2} overflow='hidden' height='48px'>
         {dashboards.length > 0 && <Tabs
           style={{flexShrink: 1}}
           value={dashboard?.id}
@@ -170,15 +170,19 @@ export function DashboardPage() {
           variant="scrollable">
           {dashboards.map(dashboard => <Tab
             iconPosition="end"
-            icon={selectedDashboard?.id !== dashboard.id ? null : <IconButton onClick={() => manager.removeDashboard(dashboard.id)}><Close /></IconButton>}
             label={dashboard.title}
             value={dashboard.id} />)}
         </Tabs>}
-        {dashboards.length > 0 && <IconButton onClick={() => manager.addDashboard({ title: 'New Dashboard' })}><Add /></IconButton>}
+        {dashboards.length > 0 && <>
+          <Divider orientation="vertical" />
+          <IconButton disabled={dashboard == null} size="small" onClick={() => manager.removeDashboard(dashboard.id)}><Close fontSize="small" /></IconButton>
+          <IconButton size="small" onClick={() => manager.addDashboard({ title: 'New Dashboard' })}><Add fontSize="small" /></IconButton>
+        </>}
         {dashboards.length === 0 && <Button onClick={() => manager.addDashboard({ title: 'New Dashboard' })} endIcon={<Add />}>
           Add Dashboard
         </Button>}
       </Box>
+      <Divider />
       <Box overflow='auto' flex={1}>
         {dashboard != null && <ResponsiveReactGridLayout
           style={{
