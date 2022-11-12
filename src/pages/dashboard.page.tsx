@@ -197,7 +197,7 @@ export function DashboardPage() {
   })
 
   return <Box bgcolor='rgb(232, 235, 240)' display='flex' flexDirection='row' alignItems='stretch' flex={1}>
-    <Box width={350} display='flex' flexDirection='column' gap={2} pt={2} pb={2}>
+    <Box width={350} display='flex' flexDirection='column' gap={2} pt={2} pb={2} overflow='auto'>
       <Box pr={2} pl={2}>
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMore />}>
@@ -236,38 +236,45 @@ export function DashboardPage() {
       </Box>
     </Box>
     <Divider orientation="vertical" />
-    <ResponsiveReactGridLayout
-      isDroppable
-      droppingItem={{
-        w: 3,
-        h: 3,
-        i: '__DROPPING_ITEM__',
-      }}
-      onDrop={(_, layout, e) => {
-        e.preventDefault();
-        const { type, payload } = JSON.parse((e as DragEvent).dataTransfer.getData('text/json'))
-        manager.add({
+    <Box overflow='auto' flex={1}>
+      <ResponsiveReactGridLayout
+        useCSSTransforms={false}
+        style={{
+          minHeight: '100%'
+        }}
+        draggableHandle='.draggable-handle'
+        draggableCancel='.draggable-cancel'
+        isDroppable
+        droppingItem={{
+          w: 3,
+          h: 3,
+          i: '__DROPPING_ITEM__',
+        }}
+        onDrop={(_, layout, e) => {
+          e.preventDefault();
+          const { type, payload } = JSON.parse((e as DragEvent).dataTransfer.getData('text/json'))
+          manager.add({
+            type,
+            payload,
+            layout,
+          })
+        }}
+        breakpoint='lg'
+        layouts={{lg: layouts}}
+        onLayoutChange={(layout) => manager.updateLayout(layout)}
+        rowHeight={50}
+        margin={[16, 16]}
+        cols={{ lg: 12 }}>{widgets.map(({
+          layout,
           type,
           payload,
-          layout,
-        })
-      }}
-      breakpoint='lg'
-      layouts={{lg: layouts}}
-      onLayoutChange={(layout) => manager.updateLayout(layout)}
-      style={{flex: 1, minHeight: '100vh'}}
-      rowHeight={50}
-      margin={[16, 16]}
-      cols={{ lg: 12 }}>{widgets.map(({
-        layout,
-        type,
-        payload,
-      }) => <WidgetBox key={layout.i}>
-        {(() => {
-          const { component: Component } = widgetTypes.find(widgetType => widgetType.type === type)
-          return <Component payload={payload} onRemove={() => manager.remove(layout.i)} onPayloadChange={(payload) => manager.update(layout.i, payload)} />
-        })()}
-      </WidgetBox>)}
-    </ResponsiveReactGridLayout>
+        }) => <WidgetBox key={layout.i}>
+          {(() => {
+            const { component: Component } = widgetTypes.find(widgetType => widgetType.type === type)
+            return <Component payload={payload} onRemove={() => manager.remove(layout.i)} onPayloadChange={(payload) => manager.update(layout.i, payload)} />
+          })()}
+        </WidgetBox>)}
+      </ResponsiveReactGridLayout>
+    </Box>
   </Box>
 }

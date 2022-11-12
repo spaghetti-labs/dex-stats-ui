@@ -55,10 +55,6 @@ const StyledBreadcrumbs = styled(Breadcrumbs)`
   };
 `;
 
-function stopProp(e: MouseEvent) {
-  e.stopPropagation()
-}
-
 export function WidgetContainer({
   children,
   graphql,
@@ -86,8 +82,8 @@ export function WidgetContainer({
   const [openSettings, setOpenSettings] = React.useState(false)
 
   return <>
-    <Paper style={{cursor: 'move', flex: 1, display: 'flex', overflow: 'hidden', flexDirection: 'column', alignItems: 'stretch', justifyContent: 'center'}}>
-      <Box alignSelf='stretch' display='flex' flexDirection='row' p={1} alignItems='center' height='48px'>
+    <Paper style={{flex: 1, cursor: 'move', display: 'flex', overflow: 'hidden', flexDirection: 'column', alignItems: 'stretch', justifyContent: 'center'}}>
+      <Box className="draggable-handle" alignSelf='stretch' display='flex' flexDirection='row' p={1} alignItems='center' height='48px'>
         {Logo != null && <Logo width={20} height={20} />}
         {breadcrumbs != null && <StyledBreadcrumbs style={{ padding: 4, flex: 1 }}>
           {breadcrumbs.map((breadcrumb, i) => <Typography noWrap key={i}
@@ -96,7 +92,7 @@ export function WidgetContainer({
             children={breadcrumb}
           />)}
         </StyledBreadcrumbs>}
-        <ButtonGroup size="small" onMouseDown={stopProp} style={{cursor: 'auto'}}>
+        <ButtonGroup size="small" className="draggable-cancel" style={{cursor: 'auto'}}>
           {graphql != null && <IconButton size="small" onClick={() => setOpenGraphql(true)}>
             <DataObject fontSize="small" />
           </IconButton>}
@@ -111,7 +107,7 @@ export function WidgetContainer({
           </IconButton>}
         </ButtonGroup>
       </Box>
-      <Box onMouseDown={stopProp} style={{cursor: 'auto'}} flex={1} position='relative' display='flex' overflow='hidden' flexDirection='column' alignItems='center' justifyContent='center' ref={ref}>
+      <Box style={{cursor: 'auto'}} flex={1} position='relative' display='flex' overflow='hidden' flexDirection='column' alignItems='center' justifyContent='center' ref={ref}>
         {children}
         {hasOverflow && <Box position='absolute' top={0} left={0} bottom={0} right={0} display='flex' flexDirection='column' alignItems='center' justifyContent='center' bgcolor='white'>
           <PhotoSizeSelectSmall />
@@ -120,7 +116,6 @@ export function WidgetContainer({
     </Paper>
 
     {graphql != null && <Dialog
-      onMouseDown={stopProp}
       maxWidth={false}
       open={openGraphql}
       onClose={() => setOpenGraphql(false)}
@@ -136,7 +131,6 @@ export function WidgetContainer({
     </Dialog>}
 
     {settings != null && <Dialog
-      onMouseDown={stopProp}
       maxWidth={false}
       open={openSettings}
       onClose={() => setOpenSettings(false)}
