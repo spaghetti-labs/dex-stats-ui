@@ -62,7 +62,7 @@ export function UniswapV2Tool() {
   const [openPairAddress, setOpenPairAddress] = React.useState<string | null>(null);
 
   return <Box width='100%' height='100%' display='flex' flexDirection='column' gap={2} justifyContent='center' alignContent='center' overflow='hidden'>
-    {!loading && <List>{pairs.map(({ address, token0, token1 }) => <React.Fragment key={address}>
+    {pairs != null && <List>{pairs.map(({ address, token0, token1 }) => <React.Fragment key={address}>
       <ListItemButton onClick={() => {
         if (openPairAddress === address) {
           setOpenPairAddress(null)

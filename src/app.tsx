@@ -3,14 +3,22 @@ import CssBaseline from '@mui/material/CssBaseline';
 import {
   ApolloProvider,
 } from "@apollo/client";
-import { client } from './client';
 import { DashboardPage } from './pages/dashboard.page';
+import { APISettingsRoot } from './components/api/api-settings';
+import { useClient } from './client';
+
+function WithAPISettings() {
+  const client = useClient()
+  return <ApolloProvider client={client}>
+    <DashboardPage />
+  </ApolloProvider>
+}
 
 export function App() {
   return <>
     <CssBaseline enableColorScheme />
-    <ApolloProvider client={client}>
-      <DashboardPage />
-    </ApolloProvider>
+    <APISettingsRoot>
+      <WithAPISettings />
+    </APISettingsRoot>
   </>;
 }

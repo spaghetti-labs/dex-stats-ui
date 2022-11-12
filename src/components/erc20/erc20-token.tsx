@@ -70,14 +70,14 @@ export function Erc20Token({
         ERC-20
       </>,
       <>
-        {loading && <Skeleton animation='pulse' variant="text" width={96} height={20} />}
-        {!loading && <>
+        {token == null && <Skeleton animation='pulse' variant="text" width={96} height={20} />}
+        {token != null && <>
           <CryptoIcon name={token.symbol} size={20} />
           {token.symbol}
         </>}
       </>
     ]}>
-    {!loading && <List dense>
+    {token != null && <List dense>
       <ListItem>
         <ListItemText primary={token.symbol} secondary="Symbol" />
       </ListItem>

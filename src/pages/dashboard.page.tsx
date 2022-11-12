@@ -8,7 +8,7 @@ import * as _ from "lodash";
 import { ReactComponent as UniswapLogo } from '../assets/uniswap.svg'
 import { ReactComponent as EthereumLogo } from '../assets/ethereum.svg'
 import { ReactComponent as SolidityLogo } from '../assets/solidity.svg'
-import { Add, ExpandMore } from "@mui/icons-material";
+import { Add, Api, ExpandMore } from "@mui/icons-material";
 import { useMemo } from "react";
 import { useEffect } from "react";
 import { v4 as uuidV4 } from "uuid";
@@ -17,6 +17,7 @@ import { EthereumTool } from "../components/ethereum/ethereum-tool";
 import { Erc20Tool } from "../components/erc20/erc20-tool";
 import { Erc20Token } from "../components/erc20/erc20-token";
 import { WidgetBox } from "../components/widget/widget-box";
+import { APISettings } from "../components/api/api-settings";
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -196,25 +197,43 @@ export function DashboardPage() {
   })
 
   return <Box bgcolor='rgb(232, 235, 240)' display='flex' flexDirection='row' alignItems='stretch' flex={1}>
-    <Box p={2} width={350}>
-      {toolTypes.map(({
-        type,
-        name,
-        component: Component,
-        logo: Logo,
-      }) => <Accordion key={type}>
-        <AccordionSummary expandIcon={<ExpandMore />}>
-          <ListItem disablePadding>
-            <ListItemIcon>
-              <Logo height={40} width={40} />
-            </ListItemIcon>
-            <ListItemText primary={name} />
-          </ListItem>
-        </AccordionSummary>
-        <AccordionDetails style={{padding: 0}}>
-          <Component />
-        </AccordionDetails>
-      </Accordion>)}
+    <Box width={350} display='flex' flexDirection='column' gap={2} pt={2} pb={2}>
+      <Box pr={2} pl={2}>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <ListItem disablePadding>
+              <ListItemIcon>
+                <Api height={40} width={40} />
+              </ListItemIcon>
+              <ListItemText primary={"API"} />
+            </ListItem>
+          </AccordionSummary>
+          <AccordionDetails style={{padding: 0}}>
+            <APISettings />
+          </AccordionDetails>
+        </Accordion>
+      </Box>
+      <Divider  />
+      <Box pr={2} pl={2}>
+        {toolTypes.map(({
+          type,
+          name,
+          component: Component,
+          logo: Logo,
+        }) => <Accordion key={type}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <ListItem disablePadding>
+              <ListItemIcon>
+                <Logo height={40} width={40} />
+              </ListItemIcon>
+              <ListItemText primary={name} />
+            </ListItem>
+          </AccordionSummary>
+          <AccordionDetails style={{padding: 0}}>
+            <Component />
+          </AccordionDetails>
+        </Accordion>)}
+      </Box>
     </Box>
     <Divider orientation="vertical" />
     <ResponsiveReactGridLayout

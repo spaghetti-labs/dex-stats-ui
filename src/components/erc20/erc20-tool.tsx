@@ -46,7 +46,7 @@ export function Erc20Tool() {
   })
 
   return <Box width='100%' height='100%' display='flex' flexDirection='column' gap={2} justifyContent='center' alignContent='center' overflow='hidden'>
-    {!loading && <List>{tokens.map(({ address, decimals, name, symbol }) => <React.Fragment key={address}>
+    {tokens != null && <List>{tokens.map(({ address, decimals, name, symbol }) => <React.Fragment key={address}>
       <ListItem style={{cursor: 'move'}} draggable onDragStart={e => {
           e.dataTransfer.setData("text/json", JSON.stringify({
             type: 'erc20/token',

@@ -168,8 +168,8 @@ export function UniswapV2Pair({
       Uniswap V2
     </>,
     <>
-      {loading && <Skeleton animation='pulse' variant="text" width={96} height={20} />}
-      {!loading && <>
+      {pair == null && <Skeleton animation='pulse' variant="text" width={96} height={20} />}
+      {pair != null && <>
         <AvatarGroup>
           <Avatar sx={{ width: 20, height: 20 }}>
             <CryptoIcon name={pair.token0.symbol} size={20} />
@@ -183,11 +183,11 @@ export function UniswapV2Pair({
     </>
   ]}>
     <Box display='flex' flexDirection='row' flexWrap='wrap' alignItems='center' justifyContent='center' alignContent='center' gap={2}>
-      {loading && <>
+      {pair == null && <>
         <Skeleton animation='pulse' variant="rounded" width={256} height={197} />
         <Skeleton animation='pulse' variant="rounded" width={256} height={197} />
       </>}
-      {!loading && <PairContent pair={pair} />}
+      {pair != null && <PairContent pair={pair} />}
     </Box>
   </WidgetContainer>
 }

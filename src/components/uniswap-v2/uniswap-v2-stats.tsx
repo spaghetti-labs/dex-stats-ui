@@ -447,8 +447,8 @@ export function UniswapV2PairStats({
         Uniswap V2
       </>,
       <>
-        {loading && <Skeleton animation='pulse' variant="text" width={96} height={20} />}
-        {!loading && <>
+        {pair == null && <Skeleton animation='pulse' variant="text" width={96} height={20} />}
+        {pair != null && <>
           <AvatarGroup>
             <Avatar sx={{ width: 20, height: 20 }}>
               <CryptoIcon name={pair.token0.symbol} size={20} />
@@ -461,7 +461,7 @@ export function UniswapV2PairStats({
         </>}
       </>
     ]}>
-    {loading && <Skeleton style={{flex: 1}} animation='pulse' variant="rounded" />}
-    {!loading && <PairContent pair={pair} payload={payload} />}
+    {pair == null && <Skeleton style={{flex: 1}} animation='pulse' variant="rounded" />}
+    {pair != null && <PairContent pair={pair} payload={payload} />}
   </WidgetContainer>
 }
