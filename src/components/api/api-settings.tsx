@@ -40,7 +40,7 @@ export function APISettingsRoot({
     }
 
     function listener(e: StorageEvent) {
-      if (e.key === this.localStorageKey) {
+      if (e.key === localStorageKey) {
         load();
       }
     }
