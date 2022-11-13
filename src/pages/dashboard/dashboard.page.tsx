@@ -1,14 +1,14 @@
 import * as React from "react";
 import { Ethereum } from "../../components/ethereum/ethereum";
 import { Responsive, WidthProvider, Layout } from "react-grid-layout";
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Button, Card, Container, Divider, Drawer, IconButton, List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, styled, Tab, Tabs, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Button, Card, Container, Divider, Drawer, IconButton, Input, List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, styled, Tab, Tabs, TextField, Typography } from "@mui/material";
 import { UniswapV2Pair } from "../../components/uniswap-v2/uniswap-v2-pair";
 import { UniswapV2PairStats } from "../../components/uniswap-v2/uniswap-v2-stats";
 import * as _ from "lodash";
 import { ReactComponent as UniswapLogo } from '../../assets/uniswap.svg'
 import { ReactComponent as EthereumLogo } from '../../assets/ethereum.svg'
 import { ReactComponent as SolidityLogo } from '../../assets/solidity.svg'
-import { Add, Api, Close, ExpandMore } from "@mui/icons-material";
+import { Add, Api, Close, Edit, ExpandMore, Save } from "@mui/icons-material";
 import { useMemo } from "react";
 import { useEffect } from "react";
 import { UniswapV2Tool } from "../../components/uniswap-v2/uniswap-v2-tool";
@@ -83,6 +83,46 @@ const toolTypes: {
   },
 ];
 
+export function DashboardTabLabel({
+  title,
+  onRename,
+  onDelete,
+}: {
+  title: string,
+  onRename: (title: string) => void,
+  onDelete: () => void,
+}) {
+  const [unsavedTitle, setUnsavedTitle] = React.useState<string>(null)
+  return <>
+    {unsavedTitle == null && <Typography variant="button" noWrap textOverflow='ellipsis' pr={1}>
+      {title}
+    </Typography>}
+    {unsavedTitle != null && <Input
+      size="small"
+      margin="dense"
+      onChange={e => setUnsavedTitle(e.target.value)}
+      inputProps={{style:{paddingBottom: '4px'}}}
+      onMouseDown={e => e.stopPropagation()}
+      onClick={e => e.stopPropagation()}
+      value={unsavedTitle} />}
+
+    {unsavedTitle == null && <IconButton size="small" onClick={(e) => {
+      setUnsavedTitle(title)
+      e.stopPropagation()
+    }}><Edit fontSize="inherit" /></IconButton>}
+    {unsavedTitle != null && <IconButton size="small" onClick={(e) => {
+      onRename(unsavedTitle)
+      setUnsavedTitle(null)
+      e.stopPropagation()
+    }}><Save fontSize="inherit" /></IconButton>}
+
+    <IconButton disabled={unsavedTitle != null} size="small" onClick={(e) => {
+      onDelete()
+      e.stopPropagation()
+    }}><Close fontSize="inherit" /></IconButton>
+  </>
+}
+
 export function DashboardPage() {
   const manager = React.useMemo(() => new DashboardManager(), [])
 
@@ -105,7 +145,6 @@ export function DashboardPage() {
       layouts: manager.getLayouts(dashboard.id)
     }
   }, [manager, dashboards, revision, dashboardIndex])
-  const selectedDashboard = dashboard
 
   useEffect(() => {
     if (dashboard == null) {
@@ -162,20 +201,24 @@ export function DashboardPage() {
     </Box>
     <Divider orientation="vertical" />
     <Box display='flex' flexDirection='column' alignItems='stretch' flex={1} overflow='hidden'>
-      <Box display='flex' flexDirection='row' alignItems='center' gap={2} pl={2} pr={2} overflow='hidden' height='48px'>
+      <Box display='flex' flexDirection='row' alignItems='center' gap={2} pl={2} pr={2} overflow='hidden' height='52px'>
         {dashboards.length > 0 && <Tabs
           style={{flexShrink: 1}}
           value={dashboard?.id}
           onChange={(_, dashboardId) => setDashboardIndex(dashboards.findIndex(dashboard => dashboard.id === dashboardId))}
           variant="scrollable">
           {dashboards.map(dashboard => <Tab
-            iconPosition="end"
-            label={dashboard.title}
-            value={dashboard.id} />)}
+            style={{minHeight: 'auto'}}
+            iconPosition='end'
+            label={<DashboardTabLabel
+              title={dashboard.title}
+              onRename={title => manager.updateDashboardTitle(dashboard.id, title)}
+              onDelete={() => manager.removeDashboard(dashboard.id)} />}
+            value={dashboard.id}
+          />)}
         </Tabs>}
         {dashboards.length > 0 && <>
           <Divider orientation="vertical" />
-          <IconButton disabled={dashboard == null} size="small" onClick={() => manager.removeDashboard(dashboard.id)}><Close fontSize="small" /></IconButton>
           <IconButton size="small" onClick={() => manager.addDashboard({ title: 'New Dashboard' })}><Add fontSize="small" /></IconButton>
         </>}
         {dashboards.length === 0 && <Button onClick={() => manager.addDashboard({ title: 'New Dashboard' })} endIcon={<Add />}>

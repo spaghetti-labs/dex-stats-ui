@@ -138,6 +138,13 @@ export class DashboardManager {
     this.notify()
   }
 
+  updateDashboardTitle(dashboardId: string, title: string) {
+    const dashboard = this.pickDashboard(dashboardId)
+    dashboard.title = title
+    this.store()
+    this.notify()
+  }
+
   updateWidget(dashboardId: string, widgetId: string, payload: Record<string, any>) {
     const dashboard = this.pickDashboard(dashboardId)
     const widget = dashboard.widgets.find(widget => widget.layout.i === widgetId)
