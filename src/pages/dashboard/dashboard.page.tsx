@@ -8,7 +8,7 @@ import * as _ from "lodash";
 import { ReactComponent as UniswapLogo } from '../../assets/uniswap.svg'
 import { ReactComponent as EthereumLogo } from '../../assets/ethereum.svg'
 import { ReactComponent as SolidityLogo } from '../../assets/solidity.svg'
-import { Add, Api, Close, Edit, ExpandMore, Save } from "@mui/icons-material";
+import { Add, Api, Check, Close, Edit, ExpandMore, Save } from "@mui/icons-material";
 import { useMemo } from "react";
 import { useEffect } from "react";
 import { UniswapV2Tool } from "../../components/uniswap-v2/uniswap-v2-tool";
@@ -114,7 +114,7 @@ export function DashboardTabLabel({
       onRename(unsavedTitle)
       setUnsavedTitle(null)
       e.stopPropagation()
-    }}><Save fontSize="inherit" /></IconButton>}
+    }}><Check fontSize="inherit" /></IconButton>}
 
     <IconButton disabled={unsavedTitle != null} size="small" onClick={(e) => {
       onDelete()

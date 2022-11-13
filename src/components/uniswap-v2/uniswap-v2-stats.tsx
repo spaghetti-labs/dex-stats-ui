@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { gql, useQuery } from '@apollo/client';
-import { Avatar, AvatarGroup, Button, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemIcon, ListItemSecondaryAction, ListItemText, Paper, Skeleton, Slider, Switch, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Avatar, AvatarGroup, Button, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemIcon, ListItemSecondaryAction, ListItemText, Paper, Skeleton, Slider, SliderValueLabelProps, Switch, Table, TableCell, tableCellClasses, TableContainer, TableHead, TableRow, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { CryptoIcon } from '../../crypto-icons/crypto-icon';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as UniswapLogo } from '../../assets/uniswap.svg'
@@ -9,6 +9,7 @@ import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Lege
 import { WidgetContainer } from '../widget/widget-container';
 import { formatNumber } from '../../utils/number-format';
 import { SwapHoriz } from '@mui/icons-material';
+import zIndex from '@mui/material/styles/zIndex';
 
 export const GET_UNISWAP_V2_PAIR_STATS = gql`
   query GetUniswapV2PairStats($address: EthereumAddress!, $fromTimestamp: UnixTime!, $slices: UInt!) {
@@ -102,8 +103,7 @@ function PairContent({
         volume: token1Volume = false,
         delta: token1Delta = false,
       } = {},
-      value = false,
-      reverseValue = false,
+      value,
     } = {}
   },
 }: {
@@ -184,12 +184,12 @@ function PairContent({
           <Line type="monotone" dataKey="token1Reserve" yAxisId="token1Reserve" dot={false} name={`${token1.symbol} Reserve`} stroke='#82ca9d' strokeWidth={2} opacity={0.85} />
         </>}
 
-        {value && !reverseValue && <>
+        {value === 'token0' && <>
           <YAxis yAxisId='token0Value' dataKey="token0Value" domain={['auto', 'auto']} tickFormatter={formatNumber} orientation={(nextOrientation=!nextOrientation) ? 'left' : 'right'} />
           <Line type="monotone" dataKey="token0Value" yAxisId="token0Value" dot={false} name={`${token0.symbol} Value`} stroke='#8884d8' strokeWidth={2} opacity={0.85} />
         </>}
 
-        {value && reverseValue && <>
+        {value === 'token1' && <>
           <YAxis yAxisId='token1Value' dataKey="token1Value" domain={['auto', 'auto']} tickFormatter={formatNumber} orientation={(nextOrientation=!nextOrientation) ? 'left' : 'right'} />
           <Line type="monotone" dataKey="token1Value" yAxisId="token1Value" dot={false} name={`${token1.symbol} Value`} stroke='#82ca9d' strokeWidth={2} opacity={0.85} />
         </>}
@@ -234,7 +234,6 @@ function PairContent({
 export interface UniswapV2PairStatsPayload {
   address: string
   charts?: {
-    value?: boolean
     token0?: {
       volume?: boolean
       reserve?: boolean
@@ -245,7 +244,7 @@ export interface UniswapV2PairStatsPayload {
       reserve?: boolean
       delta?: boolean
     },
-    reverseValue?: boolean,
+    value?: 'token0' | 'token1',
   },
   slices?: number
 }
@@ -262,17 +261,7 @@ function Settings({
   const { token0, token1 } = pair ?? {}
   const { slices = 64 } = payload
 
-  function setChartsReverseValue(reverseValue: boolean) {
-    onPayloadChange({
-      ...payload,
-      charts: {
-        ...payload.charts,
-        reverseValue,
-      },
-    })
-  }
-
-  function setChartsValue(value: boolean) {
+  function setChartsValue(value: 'token0' | 'token1' | null) {
     onPayloadChange({
       ...payload,
       charts: {
@@ -329,78 +318,113 @@ function Settings({
   }
 
   return <>
-    <List style={{width: '384px'}}>
-      <ListItem>
-        <ListItemText primary={'Slices'} />
-        <Slider style={{width: '128px'}} value={slices} onChange={(_, value) => setSlices(value as number)} min={4} max={128} step={1} />
-      </ListItem>
-      <Divider />
-      <ListItem>
-        <ListItemText primary={'Show value'} />
-        <Button onClick={() => setChartsReverseValue(!payload.charts?.reverseValue)}>
-          <CryptoIcon name={(payload.charts?.reverseValue ? token1 : token0)?.symbol} size={20} />
-          <SwapHoriz />
-          <CryptoIcon name={(payload.charts?.reverseValue ? token0 : token1)?.symbol} size={20} />
-        </Button>
-        <Switch
-          checked={payload.charts?.value ?? false}
-          onChange={(_, value) => setChartsValue(value)} />
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <CryptoIcon name={token0?.symbol} size={40} />
-        </ListItemIcon>
-        <ListItemText primary={`Show ${token0?.symbol ?? 'Token #0'} Volume`} />
-        <Switch
-          checked={payload.charts?.token0?.volume ?? false}
-          onChange={(_, value) => setChartsTokenVolume('token0', value)} />
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <CryptoIcon name={token1?.symbol} size={40} />
-        </ListItemIcon>
-        <ListItemText primary={`Show ${token1?.symbol ?? 'Token #1'} Volume`} />
-        <Switch
-          checked={payload.charts?.token1?.volume ?? false}
-          onChange={(_, value) => setChartsTokenVolume('token1', value)} />
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <CryptoIcon name={token0?.symbol} size={40} />
-        </ListItemIcon>
-        <ListItemText primary={`Show ${token0?.symbol ?? 'Token #0'} Reserve`} />
-        <Switch
-          checked={payload.charts?.token0?.reserve ?? false}
-          onChange={(_, value) => setChartsTokenReserve('token0', value)} />
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <CryptoIcon name={token1?.symbol} size={40} />
-        </ListItemIcon>
-        <ListItemText primary={`Show ${token1?.symbol ?? 'Token #1'} Reserve`} />
-        <Switch
-          checked={payload.charts?.token1?.reserve ?? false}
-          onChange={(_, value) => setChartsTokenReserve('token1', value)} />
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <CryptoIcon name={token0?.symbol} size={40} />
-        </ListItemIcon>
-        <ListItemText primary={`Show ${token0?.symbol ?? 'Token #0'} Delta`} />
-        <Switch
-          checked={payload.charts?.token0?.delta ?? false}
-          onChange={(_, value) => setChartsTokenDelta('token0', value)} />
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <CryptoIcon name={token1?.symbol} size={40} />
-        </ListItemIcon>
-        <ListItemText primary={`Show ${token1?.symbol ?? 'Token #1'} Delta`} />
-        <Switch
-          checked={payload.charts?.token1?.delta ?? false}
-          onChange={(_, value) => setChartsTokenDelta('token1', value)} />
-      </ListItem>
-    </List>
+    <TableContainer style={{width: '400px'}}>
+      <Table sx={{
+          [`& .${tableCellClasses.root}`]: {
+            borderBottom: "none"
+          }
+        }}
+        size='small'>
+        <TableRow>
+          <TableCell>
+            Slices:&nbsp;
+            <Typography variant='button'>
+              {slices.toFixed()}
+            </Typography>
+          </TableCell>
+          <TableCell colSpan={2} align='center'>
+            <Slider
+              style={{width: '128px'}}
+              value={slices}
+              onChange={(_, value) => setSlices(value as number)}
+              min={4}
+              max={128}
+              step={1} />
+          </TableCell>
+        </TableRow>
+        <TableCell colSpan={3}>
+        <Divider />
+        </TableCell>
+        <TableRow>
+          <TableCell />
+          <TableCell align='center'>
+            <CryptoIcon name={token0?.symbol} size={32} />
+          </TableCell>
+          <TableCell align='center'>
+            <CryptoIcon name={token1?.symbol} size={32} />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell />
+          <TableCell align='center' width='128px'>
+            <Typography textOverflow='ellipsis' variant='inherit'>{token0?.name ?? 'Token #0'}</Typography>
+          </TableCell>
+          <TableCell align='center' width='128px'>
+            <Typography textOverflow='ellipsis' variant='inherit'>{token1?.name ?? 'Token #1'}</Typography>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>
+            Value
+          </TableCell>
+          <TableCell align='center'>
+            <Switch
+              checked={payload.charts?.value === 'token0'}
+              onChange={(_, value) => setChartsValue(value ? 'token0' : null)} />
+          </TableCell>
+          <TableCell align='center'>
+          <Switch
+              checked={payload.charts?.value === 'token1'}
+              onChange={(_, value) => setChartsValue(value ? 'token1' : null)} />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>
+            Volume
+          </TableCell>
+          <TableCell align='center'>
+            <Switch
+              checked={payload.charts?.token0?.volume ?? false}
+              onChange={(_, value) => setChartsTokenVolume('token0', value)} />
+          </TableCell>
+          <TableCell align='center'>
+            <Switch
+              checked={payload.charts?.token1?.volume ?? false}
+              onChange={(_, value) => setChartsTokenVolume('token1', value)} />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>
+            Reserve
+          </TableCell>
+          <TableCell align='center'>
+            <Switch
+              checked={payload.charts?.token0?.reserve ?? false}
+              onChange={(_, value) => setChartsTokenReserve('token0', value)} />
+          </TableCell>
+          <TableCell align='center'>
+            <Switch
+              checked={payload.charts?.token1?.reserve ?? false}
+              onChange={(_, value) => setChartsTokenReserve('token1', value)} />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>
+            Reserve Delta
+          </TableCell>
+          <TableCell align='center'>
+            <Switch
+              checked={payload.charts?.token0?.delta ?? false}
+              onChange={(_, value) => setChartsTokenDelta('token0', value)} />
+          </TableCell>
+          <TableCell align='center'>
+            <Switch
+              checked={payload.charts?.token1?.delta ?? false}
+              onChange={(_, value) => setChartsTokenDelta('token1', value)} />
+          </TableCell>
+        </TableRow>
+      </Table>
+    </TableContainer>
   </>
 }
 
